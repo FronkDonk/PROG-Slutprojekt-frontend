@@ -13,100 +13,36 @@ namespace PROG_Slutprojekt_frontend.MVVM.ViewModel
 {
     internal class MainViewModel: ObservableObject
     {
-        private readonly DataService dataService = new DataService();
-        public ObservableCollection<ContactModel> Contacts { get; set; }
+        
 
 
-        public RelayCommand SendCommand { get; set; }
-        public ContactModel selectedContact { get; set; }
+        public SignInViewModel SignInVM { get; set; }
 
-        public ContactModel SelectedContact
+        public SignUpViewModel SignUpVM { get; set; }
+        public ChatViewModel ChatVM { get; set; }
+
+       
+        
+
+
+
+
+        private object currentView;
+        public object CurrentView
         {
-            get { return selectedContact; }
-            set
-            {
-                selectedContact = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(Messages)); // Notify that the Messages property has changed
-                if(selectedContact != null)
-                {
-                    GetMessages(selectedContact.chatRoomId);
-                }
-            }
+            get { return currentView; }
+            set { currentView = value; OnPropertyChanged(); }
         }
-
-
-
-        public ObservableCollection<MessageModel> Messages
-        {
-            get
-            {
-                return SelectedContact?.Messages;
-            }
-        }
-        private string message;
-
-        public string Message
-        {
-            get { return message; }
-            set { message = value; OnPropertyChanged(); }
-        }
-
-
-
-
-
-
-
         public MainViewModel()
         {
-            Contacts = new ObservableCollection<ContactModel>();
+            SignInVM = new SignInViewModel();
+            SignUpVM = new SignUpViewModel();
+            ChatVM = new ChatViewModel();
 
-            SendCommand = new RelayCommand(o =>
-            {
-                if (SelectedContact != null)
-                {
-                    SelectedContact.Messages.Add(new MessageModel
-                    {
-                        username = "something",
-                        message = Message,
-                        FirstMessage = false,
-                        sentAt = DateTime.Now,
-                        IsClientMessage = false
-                    });
-
-                    Message = "";
-                }
-            });
-
-            // Sample contacts and messages for initialization
-            GetChatRooms();            
+            CurrentView = SignInVM;
         }
 
-        private async void GetChatRooms()
-        {
-            var contacts = await dataService.GetChatRooms("d6076748-26b5-4dde-9ca7-bf3c5e144f7d");
-            
-                foreach (var contact in contacts)
-                {
-                    Contacts.Add(contact);
-                }
-           
-        }
-        private async void GetMessages(string roomId)
-        {
-            if (selectedContact != null)
-            {
-                selectedContact.Messages.Clear();
-
-                var messages = await dataService.GetMessagesInRoom(roomId);
-
-                foreach (var message in messages)
-                {
-                    Messages.Add(message);
-                }
-            }
-        }
+    
 
 
     }

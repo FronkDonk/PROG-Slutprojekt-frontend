@@ -1,0 +1,53 @@
+﻿<UserControl x:Class="PROG_Slutprojekt_frontend.MVVM.View.SignUpView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:PROG_Slutprojekt_frontend.MVVM.View"
+             mc:Ignorable="d" 
+             d:DesignHeight="650" d:DesignWidth="1200"
+             Background="#36393F">
+    <Grid>
+        <StackPanel Grid.Column="0" HorizontalAlignment="center" VerticalAlignment="Center">
+            <StackPanel Margin="0,0,0,10">
+                <TextBlock
+            Text="Create your account"
+            FontSize="24"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Top"
+            Foreground="#F9FAFB"
+            />
+                <TextBlock
+            Text="Already have an account? Sign in"
+            FontSize="14"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Top"
+            Foreground="#A1A1AA"
+            />
+            </StackPanel>
+            <StackPanel MaxWidth="250">
+                <StackPanel Margin="0, 0, 0, 10" Orientation="Vertical">
+                    <TextBlock Margin="0, 0, 0, 5" Text="Username" FontSize="12" Foreground="#F9FAFB"/>
+                    <TextBox x:Name="username" />
+                </StackPanel>
+                <StackPanel Margin="0, 0, 0, 10" Orientation="Vertical">
+                    <TextBlock  Margin="0, 0, 0, 5"  Text="Email" FontSize="12" Foreground="#F9FAFB"/>
+                    <TextBox x:Name="email"  />
+                </StackPanel>
+                <StackPanel Margin="0, 0, 0, 10" Orientation="Vertical">
+                    <TextBlock  Margin="0, 0, 0, 5"  Text="Password" FontSize="12" Foreground="#F9FAFB"/>
+                    <TextBox x:Name="password"  />
+                </StackPanel>
+                <Button Content="Sign up" Click="SignUp" />
+            </StackPanel>
+        </StackPanel>
+        <Image Grid.Column="1" Source="pack://application:,,,/images/cape-town-1.jpg" Stretch="Fill" />
+
+
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+    </Grid>
+</UserControl>
