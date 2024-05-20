@@ -13,16 +13,24 @@ namespace PROG_Slutprojekt_frontend.MVVM.ViewModel
 {
     internal class MainViewModel: ObservableObject
     {
-        
-
-
         public SignInViewModel SignInVM { get; set; }
 
         public SignUpViewModel SignUpVM { get; set; }
         public ChatViewModel ChatVM { get; set; }
 
-       
-        
+        private object currentUser;
+        public object CurrentUser
+        {
+            get { return currentUser; }
+            set
+            {
+                currentUser = value;
+                OnPropertyChanged(nameof(CurrentUser));
+                CurrentView = CurrentUser == null ? (object)SignInVM : ChatVM;
+                OnPropertyChanged(nameof(CurrentView));
+            }
+        }
+
 
 
 
@@ -38,11 +46,12 @@ namespace PROG_Slutprojekt_frontend.MVVM.ViewModel
             SignInVM = new SignInViewModel();
             SignUpVM = new SignUpViewModel();
             ChatVM = new ChatViewModel();
+            CurrentView = ChatVM;
 
-            CurrentView = SignInVM;
+
         }
 
-    
+
 
 
     }

@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using Newtonsoft.Json;
 using PROG_Slutprojekt_frontend.MVVM.Model;
+using PROG_Slutprojekt_frontend.MVVM.ViewModel;
 using PROG_Slutprojekt_frontend.Validators;
 using System;
 using System.Collections.Generic;
@@ -25,9 +26,11 @@ namespace PROG_Slutprojekt_frontend.MVVM.View
     /// </summary>
     public partial class SignInView : UserControl
     {
+        private MainViewModel mainViewModel;
         public SignInView()
         {
             InitializeComponent();
+            mainViewModel = (MainViewModel)DataContext;
         }
 
         private async void SignIn(object sender, RoutedEventArgs e)
@@ -35,6 +38,7 @@ namespace PROG_Slutprojekt_frontend.MVVM.View
             SignInSchema validations = new SignInSchema();
             string userEmail = email.Text.Trim();
             string userPassword = password.Text.Trim();
+            MainViewModel mainViewModel = new MainViewModel();
 
             SignInUser signInUser = new SignInUser(userEmail, userPassword);
             var result = validations.Validate(signInUser);
@@ -61,7 +65,11 @@ namespace PROG_Slutprojekt_frontend.MVVM.View
                         switch (res.StatusCode)
                         {
                             case (System.Net.HttpStatusCode)200:
-                                
+                                var responseBody = await res.Content.ReadAsStringAsync();
+                                UserModel user = JsonConvert.DeserializeObject<UserModel>(responseBody);
+                                mainViewModel.CurrentUser = user; // Update the MainViewModel's CurrentUser property
+                                MessageBox.Show($"Successfully signed in as {user.email} {user.id}");
+
 
                                 break;
                             case (System.Net.HttpStatusCode)404:

@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using PROG_Slutprojekt_frontend.MVVM.Model;
+using PROG_Slutprojekt_frontend.MVVM.ViewModel;
 using PROG_Slutprojekt_frontend.Validators;
 using System;
 using System.Collections.Generic;
@@ -35,7 +36,7 @@ namespace PROG_Slutprojekt_frontend.MVVM.View
             string userName = username.Text.Trim();
             string userEmail = email.Text.Trim();
             string userPassword = password.Text.Trim();
-
+            MainViewModel mainViewModel = new MainViewModel();
             SignUpUser signUpUser = new SignUpUser(userName, userEmail, userPassword);
             var result = validations.Validate(signUpUser);
 
@@ -63,6 +64,10 @@ namespace PROG_Slutprojekt_frontend.MVVM.View
                         switch (res.StatusCode)
                         {
                             case (System.Net.HttpStatusCode)200:
+                                var responseBody = await res.Content.ReadAsStringAsync();
+                                UserModel user = JsonConvert.DeserializeObject<UserModel>(responseBody);
+                                mainViewModel.CurrentUser = user;
+
                                 MessageBox.Show("User created");
                                 break;
                             case (System.Net.HttpStatusCode)409:

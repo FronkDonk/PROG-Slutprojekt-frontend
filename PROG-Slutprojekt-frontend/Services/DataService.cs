@@ -22,6 +22,8 @@ namespace PROG_Slutprojekt_frontend.Services
             };
         }
 
+        
+
         public async Task<List<ContactModel>> GetChatRooms(string userId)
         {
             try
@@ -78,7 +80,21 @@ namespace PROG_Slutprojekt_frontend.Services
                 roomId = roomId  
             };
 
-            var response = await httpClient.PostAsJsonAsync("https://localhost:7229/api/chat/sendMessage", newMessage);
+            var response = await httpClient.PostAsJsonAsync("https://localhost:7229/api/chat/chatrooms/sendMessage", newMessage);
+
+            switch (response.StatusCode)
+            {
+                case System.Net.HttpStatusCode.OK:
+                    MessageBox.Show("Message sent successfully");
+                    break;
+                case System.Net.HttpStatusCode.BadRequest:
+                    MessageBox.Show("Message failed to send");
+                    break;
+                default:
+                    MessageBox.Show("An error occurred while sending the message");
+                    break;
+            }
+            
         }
 
         public async Task<List<MessageModel>> GetMessagesInRoom(string roomId)
@@ -98,6 +114,7 @@ namespace PROG_Slutprojekt_frontend.Services
                 var messageModel = new MessageModel
                 {
                     username = message.username,
+                    roomId = message.chatRoomId,
                     message = message.message,
                     userId = message.userId,
                     sentAt = message.sentAt,
