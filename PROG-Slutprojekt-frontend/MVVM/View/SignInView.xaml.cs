@@ -2,7 +2,9 @@
 using Newtonsoft.Json;
 using PROG_Slutprojekt_frontend.MVVM.Model;
 using PROG_Slutprojekt_frontend.MVVM.ViewModel;
+using PROG_Slutprojekt_frontend.Services;
 using PROG_Slutprojekt_frontend.Validators;
+using Supabase.Gotrue;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,19 +28,17 @@ namespace PROG_Slutprojekt_frontend.MVVM.View
     /// </summary>
     public partial class SignInView : UserControl
     {
-        private MainViewModel mainViewModel;
         public SignInView()
         {
             InitializeComponent();
-            mainViewModel = (MainViewModel)DataContext;
         }
 
         private async void SignIn(object sender, RoutedEventArgs e)
         {
+
             SignInSchema validations = new SignInSchema();
             string userEmail = email.Text.Trim();
             string userPassword = password.Text.Trim();
-            MainViewModel mainViewModel = new MainViewModel();
 
             SignInUser signInUser = new SignInUser(userEmail, userPassword);
             var result = validations.Validate(signInUser);
@@ -67,10 +67,9 @@ namespace PROG_Slutprojekt_frontend.MVVM.View
                             case (System.Net.HttpStatusCode)200:
                                 var responseBody = await res.Content.ReadAsStringAsync();
                                 UserModel user = JsonConvert.DeserializeObject<UserModel>(responseBody);
-                                mainViewModel.CurrentUser = user; // Update the MainViewModel's CurrentUser property
                                 MessageBox.Show($"Successfully signed in as {user.email} {user.id}");
-
-
+                                Messenger.Instance.RaiseNavigateRequest(new NavigateMessage { NewView = new ChatViewModel() });
+                                UserService.Instance.User = user;
                                 break;
                             case (System.Net.HttpStatusCode)404:
                                 MessageBox.Show("invalid credentials");
@@ -98,6 +97,28 @@ namespace PROG_Slutprojekt_frontend.MVVM.View
                     MessageBox.Show(failure.ErrorMessage);
                 }
             }
+        }
+ 
+        
+
+        private void SignInAsGuest(object sender, RoutedEventArgs e)
+        {
+            Messenger.Instance.RaiseNavigateRequest(new NavigateMessage { NewView = new SignUpViewModel() });
+
+            //mock user
+            
+            UserModel user = new UserModel
+            {
+                id = "2e41d814-ef96-4fe0-aa2d-b8e8fcbe828d",
+                username = "JohnDoe",
+                email = "johnDoe@gmail.com",
+                createdAt = DateTime.Now,
+                avatarColor1 = "#FF6347",
+                avatarColor2 = "#FFA500"
+            };
+
+            UserService.Instance.User = user;
+            
         }
     }
 }

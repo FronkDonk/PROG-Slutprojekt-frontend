@@ -1,0 +1,28 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style TargetType="TextBox" x:Key="Input">
+        <Setter Property="Foreground" Value="Gray" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="Padding" Value="5" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Border CornerRadius="5" Background="#3e4147">
+                        <Grid>
+                            <TextBox VerticalAlignment="Stretch"
+                                  VerticalContentAlignment="Center"
+                                  HorizontalAlignment="Stretch"
+                                  Background="Transparent"
+                                  TextWrapping="Wrap"
+                                  BorderThickness="0"
+                                  Padding="{TemplateBinding Padding}"
+                                  Foreground="Gray"
+                                  CaretBrush="Gray"
+                                  />
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

@@ -24,11 +24,7 @@ namespace PROG_Slutprojekt_frontend.MVVM.ViewModel
         public RelayCommand SendCommand { get; set; }
         public ContactModel selectedContact { get; set; }
 
-        //make a list of previous realtime connections
-
-        List<string> existingChannels = new();
-
-
+        // The currently selected contact in the chat
         public ContactModel SelectedContact
         {
             get { return selectedContact; }
@@ -39,18 +35,25 @@ namespace PROG_Slutprojekt_frontend.MVVM.ViewModel
                 OnPropertyChanged(nameof(Messages)); // Notify that the Messages property has changed
                 if (selectedContact != null)
                 {
-                    if(!existingChannels.Contains(selectedContact.chatRoomId))
-                    {
-                        existingChannels.Add(selectedContact.chatRoomId);
-                        SetupRealtimeConnection(selectedContact.chatRoomId);
-                    }
-                    GetMessages(selectedContact.chatRoomId);
-                    
-                    
+                    // If a contact is selected, get the messages for the chat room
+                    GetMessages(selectedContact.chatRoomId);        
                 }
             }
         }
-
+        // The current user
+        private UserModel user;
+        public UserModel User
+        {
+            get { return user; }
+            set
+            {
+                user = value;
+                OnPropertyChanged(nameof(User));
+                // When the user is set, get the chat rooms for the user
+                GetChatRooms(user.id);
+            }
+        }
+        // Collection of messages in the selected chat room
         public ObservableCollection<MessageModel> Messages
         {
             get
@@ -68,90 +71,52 @@ namespace PROG_Slutprojekt_frontend.MVVM.ViewModel
 
         public ChatViewModel()
         {
+            // Subscribe to the PropertyChanged event of the UserService
+            UserService.Instance.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(UserService.User))
+                {
+                    User = UserService.Instance.User;
+                }
+            };
+
+            user = UserService.Instance.User;
+            Debug.WriteLine("CONTACTS LENGTH: ", Contacts?.Count);
+            if(user != null)
+            {
+                GetChatRooms(user.id);
+            }
+
             Contacts = new ObservableCollection<ContactModel>();
 
+            // Initialize the SendCommand with a command that sends a message
             SendCommand = new RelayCommand(async o =>
             {
                 if (SelectedContact != null)
                 {
                     SelectedContact.Messages.Add(new MessageModel
                     {
-                        username = "asdasd",
+                        username = user.username,
                         message = Message,
-                        FirstMessage = false,
                         sentAt = DateTime.Now,
-                        IsClientMessage = false
+                        avatarColor1 = user.avatarColor1,
+                        avatarColor2 = user.avatarColor2
                     });
+
+                    string newMessage = Message;
 
                     Message = "";
-                    var url = "https://wzqbaxbadiqwdodpcglt.supabase.co";
-                    var key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind6cWJheGJhZGlxd2RvZHBjZ2x0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTEyODI2NDAsImV4cCI6MjAyNjg1ODY0MH0.edflXOAsbKYV7nuIQaGteGsAbdFaRjB64PyP0uRKnxw";
-                    var options = new Supabase.SupabaseOptions
-                    {
-                        AutoConnectRealtime = true
-                    };
 
-                    var supabase = new Supabase.Client(url, key, options);
-
-                    var chatRoom = supabase.Realtime.Connect().Channel($"room-{selectedContact.chatRoomId}");
-
-                    var broadcast = chatRoom.Register<RealtimeMessage>();
-
-                    await chatRoom.Subscribe();
-
-
-                    await broadcast.Send("new-message", new RealtimeMessage
-                    {
-                        Payload = new Dictionary<string, object>
-                        {
-                            { "message", Message },
-                            { "chatRoomId", SelectedContact.chatRoomId },
-                            { "username", "FronkDonk" },
-                            { "userId",  "1"}
-                        }
-                    });
-
-                    await dataService.SendMessage(selectedContact.chatRoomId, Message, "d6076748-26b5-4dde-9ca7-bf3c5e144f7d");
+                    await dataService.SendMessage(selectedContact.chatRoomId, newMessage, user.id);
                 }
             });
 
-            GetChatRooms();
         }
 
-        private async void SetupRealtimeConnection(string chatRoomId)
+        // Method to get the chat rooms for a user
+        private async void GetChatRooms(string userId)
         {
-            Debug.WriteLine("Setting up realtime connection");
-            // Initialize the Realtime client and channel
-            var url = "https://wzqbaxbadiqwdodpcglt.supabase.co";
-            var key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind6cWJheGJhZGlxd2RvZHBjZ2x0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTEyODI2NDAsImV4cCI6MjAyNjg1ODY0MH0.edflXOAsbKYV7nuIQaGteGsAbdFaRjB64PyP0uRKnxw";
-            var options = new Supabase.SupabaseOptions
-            {
-                AutoConnectRealtime = true
-            };
-
-            var supabase = new Supabase.Client(url, key, options);
-
-            // Subscribe to the channel
-            var chatRoom = supabase.Realtime.Connect().Channel($"room-{chatRoomId}");
-
-            var broadcast = chatRoom.Register<RealtimeMessage>();
-            broadcast.AddBroadcastEventHandler((sender, baseBroadcast) =>
-            {
-                var message = baseBroadcast.Payload["message"];
-                Debug.WriteLine($"asokdasokdopkasdokpasokpdopkasdokp {message}");
-                
-            });
-
-            await chatRoom.Subscribe();
-
-
-
-
-        }
-
-        private async void GetChatRooms()
-        {
-            var contacts = await dataService.GetChatRooms("d6076748-26b5-4dde-9ca7-bf3c5e144f7d");
+            var contacts = await dataService.GetChatRooms(userId);
 
             foreach (var contact in contacts)
             {
@@ -159,6 +124,7 @@ namespace PROG_Slutprojekt_frontend.MVVM.ViewModel
             }
 
         }
+        // Method to get the messages in a chat room
         private async void GetMessages(string roomId)
         {
             if (selectedContact != null)

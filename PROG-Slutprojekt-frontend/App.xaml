@@ -12,10 +12,16 @@
                 <ResourceDictionary Source="./Components/ChatItem.xaml"/>
                 <ResourceDictionary Source="./Components/MessageBox.xaml"/>
                 <ResourceDictionary Source="./Components/Scrollbar.xaml"/>
+                <ResourceDictionary Source="./Components/FriendsCard.xaml"/>
+                <ResourceDictionary Source="./Components/Button.xaml"/>
+                <ResourceDictionary Source="./Components/Input.xaml"/>
 
             </ResourceDictionary.MergedDictionaries>
             <DataTemplate DataType="{x:Type viewModel:SignInViewModel}">
                 <view:SignInView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type viewModel:AddFriendsViewModel}">
+                <view:AddFriendsView />
             </DataTemplate>
             <DataTemplate DataType="{x:Type viewModel:SignUpViewModel}">
                 <view:SignUpView />

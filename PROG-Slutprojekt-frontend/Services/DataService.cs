@@ -1,6 +1,7 @@
 ﻿using PROG_Slutprojekt_frontend.MVVM.Model;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -28,73 +29,159 @@ namespace PROG_Slutprojekt_frontend.Services
         {
             try
             {
-                var response = await httpClient.GetStringAsync($"https://localhost:7229/api/chat/chatrooms/{userId}");
-                Console.WriteLine("Raw JSON response:");
-                Console.WriteLine(response); 
-
-                var chatRoomsResponse = JsonSerializer.Deserialize<ChatRoomsResponse>(response, new JsonSerializerOptions
+                var httpResponse = await httpClient.GetAsync($"https://localhost:7229/api/chat/chatrooms/{userId}");
+               
+                if(httpResponse.IsSuccessStatusCode)
                 {
-                    PropertyNameCaseInsensitive = true,
-                    WriteIndented = true,
-                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-                });
-
-                var contactModels = new List<ContactModel>();
-                foreach (var chatRoomResponse in chatRoomsResponse?.chatRoomsDetails ?? Enumerable.Empty<ChatRoomResponse>())
-                {
-                    var participant = chatRoomResponse.otherParticipants?.FirstOrDefault();
-                    if (participant != null)
+                    var response = await httpResponse.Content.ReadAsStringAsync();
+                    var chatRoomsResponse = JsonSerializer.Deserialize<ChatRoomsResponse>(response, new JsonSerializerOptions
                     {
-                        var contactModel = new ContactModel
+                        PropertyNameCaseInsensitive = true,
+                        WriteIndented = true,
+                        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+                    });
+
+                    var contactModels = new List<ContactModel>();
+                    foreach (var chatRoomResponse in chatRoomsResponse?.chatRoomsDetails ?? Enumerable.Empty<ChatRoomResponse>())
+                    {
+                        var participant = chatRoomResponse.otherParticipants?.FirstOrDefault();
+                        if (participant != null)
                         {
-                            id = chatRoomResponse.chatRoomId,
-                            chatRoomId = chatRoomResponse.chatRoomId,
-                            username = participant.username,
-                            email = participant.email,
-                        };
+                            var contactModel = new ContactModel
+                            {
+                                id = chatRoomResponse.chatRoomId,
+                                chatRoomId = chatRoomResponse.chatRoomId,
+                                username = participant.username,
+                                email = participant.email,
+                                avatarColor1 = participant.avatarColor1,
+                                avatarColor2 = participant.avatarColor2
 
-                        contactModels.Add(contactModel);
+                            };
+
+                            contactModels.Add(contactModel);
+                        }
                     }
-                }
 
-                return contactModels;
+                    return contactModels;
+                } 
+
+                return new List<ContactModel>();
+
+
             }
             catch (JsonException jsonEx)
             {
                 MessageBox.Show($"JSON Deserialization Error: {jsonEx.Message}");
                 return new List<ContactModel>();
             }
+        }
+
+        public async Task AddFriend(string addedFriendId, string userId)
+        {
+            try
+            {
+              
+                var response = await httpClient.PostAsJsonAsync("https://localhost:7229/api/chat/chatrooms/create", new { addedFriendId, userId });
+
+
+                switch (response.StatusCode)
+                {
+                    case System.Net.HttpStatusCode.OK:
+                        Debug.WriteLine("Message sent successfully");
+                        break;
+                    case System.Net.HttpStatusCode.BadRequest:
+                        Debug.WriteLine("Message failed to send");
+                        break;
+                    default:
+                        Debug.WriteLine("An error occurred while sending the message");
+                        break;
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                Debug.WriteLine($"Request exception: {ex.Message}");
+            }
+            catch (TaskCanceledException ex)
+            {
+                Debug.WriteLine($"Request was cancelled: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"An unexpected error occurred: {ex.Message}");
+            }
+
+
+        }
+
+        public async Task<List<FriendsModel>> GetUsersNotInChatRoom(string userId)
+        {
+            try
+            {
+
+                var response = await httpClient.GetStringAsync($"https://localhost:7229/api/user/usersNotInChatRoom/{userId}");
+
+                var usersNotInChatRoom = JsonSerializer.Deserialize<List<FriendsModel>>(response, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                    WriteIndented = true,
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+                });
+
+                Debug.WriteLine("Users not in chat room:");
+                foreach (var user in usersNotInChatRoom)
+                {
+                    Debug.WriteLine(user.email);
+                }
+
+                return usersNotInChatRoom ?? new List<FriendsModel>();
+            }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error: {ex.Message}");
-                return new List<ContactModel>();
+                return new List<FriendsModel>();
             }
         }
 
         public async Task SendMessage(string roomId, string message, string userId)
         {
-            var newMessage = new MessageModel
+            try
             {
-                userId = userId,
-                message = message,
-                roomId = roomId  
-            };
+                var newMessage = new MessageModel
+                {
+                    userId = userId,
+                    message = message,
+                    roomId = roomId
+                };
 
-            var response = await httpClient.PostAsJsonAsync("https://localhost:7229/api/chat/chatrooms/sendMessage", newMessage);
+                var response = await httpClient.PostAsJsonAsync("https://localhost:7229/api/chat/chatrooms/sendMessage", newMessage);
 
-            switch (response.StatusCode)
-            {
-                case System.Net.HttpStatusCode.OK:
-                    MessageBox.Show("Message sent successfully");
-                    break;
-                case System.Net.HttpStatusCode.BadRequest:
-                    MessageBox.Show("Message failed to send");
-                    break;
-                default:
-                    MessageBox.Show("An error occurred while sending the message");
-                    break;
+                switch (response.StatusCode)
+                {
+                    case System.Net.HttpStatusCode.OK:
+                        Debug.WriteLine("Message sent successfully");
+                        break;
+                    case System.Net.HttpStatusCode.BadRequest:
+                        Debug.WriteLine("Message failed to send");
+                        break;
+                    default:
+                        Debug.WriteLine("An error occurred while sending the message");
+                        break;
+                }
             }
-            
+            catch (HttpRequestException ex)
+            {
+                Debug.WriteLine($"Request exception: {ex.Message}");
+            }
+            catch (TaskCanceledException ex)
+            {
+                Debug.WriteLine($"Request was cancelled: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"An unexpected error occurred: {ex.Message}");
+            }
+
+
         }
 
         public async Task<List<MessageModel>> GetMessagesInRoom(string roomId)
@@ -118,8 +205,8 @@ namespace PROG_Slutprojekt_frontend.Services
                     message = message.message,
                     userId = message.userId,
                     sentAt = message.sentAt,
-                    IsClientMessage = message.userId == "d6076748-26b5-4dde-9ca7-bf3c5e144f7d", // Hardcoded client id. Change later
-                    FirstMessage = null
+                    avatarColor1 = message.avatarColor1,
+                    avatarColor2 = message.avatarColor2
                 };
                 messageModels.Add(messageModel);
             }

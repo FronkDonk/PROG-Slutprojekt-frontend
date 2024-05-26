@@ -22,13 +22,14 @@
                             <Ellipse Width="30" Height="30">
                                 <Ellipse.Fill>
                                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                        <GradientStop Color="{Binding avatarColor1}" Offset="0"/>
-                                        <GradientStop Color="{Binding avatarColor2}" Offset="1"/>
+                                        <GradientStop Color="Yellow" Offset="0"/>
+                                        <GradientStop Color="Red" Offset="1"/>
                                     </LinearGradientBrush>
                                 </Ellipse.Fill>
                             </Ellipse>
                             <StackPanel Margin="4,0,0,0">
                                 <Label Content="{Binding username}" FontWeight="Medium" FontSize="13" Foreground="White"/>
+                                <Label Content="{Binding LastMessage}" Foreground="Gray" FontSize="13" />
                             </StackPanel>
                         </StackPanel>
                     </Border>

@@ -4,6 +4,7 @@ using PROG_Slutprojekt_frontend.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,36 +19,43 @@ namespace PROG_Slutprojekt_frontend.MVVM.ViewModel
         public SignUpViewModel SignUpVM { get; set; }
         public ChatViewModel ChatVM { get; set; }
 
-        private object currentUser;
-        public object CurrentUser
+        public RelayCommand AddFriendCommand { get; set; }
+
+
+        private UserModel user;
+        public UserModel User
         {
-            get { return currentUser; }
-            set
-            {
-                currentUser = value;
-                OnPropertyChanged(nameof(CurrentUser));
-                CurrentView = CurrentUser == null ? (object)SignInVM : ChatVM;
-                OnPropertyChanged(nameof(CurrentView));
+            get { return user; }
+            set 
+            { 
+                user = value; 
+                OnPropertyChanged(nameof(User));
             }
         }
 
-
-
-
-
-        private object currentView;
-        public object CurrentView
-        {
-            get { return currentView; }
-            set { currentView = value; OnPropertyChanged(); }
-        }
         public MainViewModel()
         {
-            SignInVM = new SignInViewModel();
-            SignUpVM = new SignUpViewModel();
-            ChatVM = new ChatViewModel();
-            CurrentView = ChatVM;
+            UserService.Instance.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(UserService.User))
+                {
+                    User = UserService.Instance.User;
+                }
+            };
 
+            AddFriendCommand = new RelayCommand(o =>
+            {
+                Debug.WriteLine("KUKSUGARE");
+            });
+
+            Messenger.Instance.NavigateRequested += message =>
+            {
+                CurrentView = message.NewView;
+            };
+
+            SignInVM = new SignInViewModel();
+
+            CurrentView = SignInVM;
 
         }
 

@@ -1,9 +1,12 @@
 ﻿using Newtonsoft.Json;
+using PROG_Slutprojekt_frontend.Constants;
 using PROG_Slutprojekt_frontend.MVVM.Model;
 using PROG_Slutprojekt_frontend.MVVM.ViewModel;
+using PROG_Slutprojekt_frontend.Services;
 using PROG_Slutprojekt_frontend.Validators;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -36,14 +39,17 @@ namespace PROG_Slutprojekt_frontend.MVVM.View
             string userName = username.Text.Trim();
             string userEmail = email.Text.Trim();
             string userPassword = password.Text.Trim();
-            MainViewModel mainViewModel = new MainViewModel();
             SignUpUser signUpUser = new SignUpUser(userName, userEmail, userPassword);
             var result = validations.Validate(signUpUser);
 
+
             if (result.IsValid)
             {
-                MessageBox.Show("User is valid");
-
+                Random random = new Random();
+                
+                var randomGradient = AvatarGradient.Gradients[random.Next(AvatarGradient.Gradients.Length)];
+                Debug.WriteLine("COLOR1", randomGradient.Color1);
+                Debug.WriteLine("COLOR2", randomGradient.Color2);
                 using (var httpClient = new HttpClient())
                 {
                     try
@@ -53,7 +59,9 @@ namespace PROG_Slutprojekt_frontend.MVVM.View
                             username = userName,
                             email = userEmail,
                             password = userPassword,
-                            createdAt = DateTime.UtcNow
+                            createdAt = DateTime.UtcNow,
+                            avatarColor1 = randomGradient.Color1,
+                            avatarColor2 = randomGradient.Color2,
                         });
 
                         var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -66,7 +74,8 @@ namespace PROG_Slutprojekt_frontend.MVVM.View
                             case (System.Net.HttpStatusCode)200:
                                 var responseBody = await res.Content.ReadAsStringAsync();
                                 UserModel user = JsonConvert.DeserializeObject<UserModel>(responseBody);
-                                mainViewModel.CurrentUser = user;
+                                Messenger.Instance.RaiseNavigateRequest(new NavigateMessage { NewView = new ChatViewModel() });
+                                UserService.Instance.User = user;
 
                                 MessageBox.Show("User created");
                                 break;
@@ -94,6 +103,11 @@ namespace PROG_Slutprojekt_frontend.MVVM.View
                     MessageBox.Show(failure.ErrorMessage);
                 }
             }
+        }
+
+        private void Navigate(object sender, RoutedEventArgs e)
+        {
+            Messenger.Instance.RaiseNavigateRequest(new NavigateMessage { NewView = new SignInViewModel() });
         }
     }
 }

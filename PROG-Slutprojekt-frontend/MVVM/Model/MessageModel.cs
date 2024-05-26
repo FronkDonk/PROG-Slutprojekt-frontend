@@ -14,7 +14,10 @@ namespace PROG_Slutprojekt_frontend.MVVM.Model
         public DateTime sentAt { get; set; }
 
         public string? roomId { get; set; }
-        public bool? IsClientMessage { get; set; }
-        public bool? FirstMessage { get; set; }
+
+        public string? avatarColor1 { get; set; }
+
+        public string? avatarColor2 { get; set; }
+   
     }
 }

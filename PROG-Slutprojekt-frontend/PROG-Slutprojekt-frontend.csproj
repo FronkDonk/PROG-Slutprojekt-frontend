@@ -9,11 +9,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Components\FriendCard.xaml.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Remove="Components\ContactCard - Copy.xaml" />
+    <Page Remove="Components\FriendCard.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Icons\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="11.9.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="supabase-csharp" Version="0.16.1" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />

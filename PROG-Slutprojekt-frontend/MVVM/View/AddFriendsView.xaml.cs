@@ -18,18 +18,23 @@ using System.Windows.Shapes;
 namespace PROG_Slutprojekt_frontend.MVVM.View
 {
     /// <summary>
-    /// Interaction logic for ChatView.xaml
+    /// Interaction logic for AddFriendsView.xaml
     /// </summary>
-    public partial class ChatView : UserControl
+    public partial class AddFriendsView : UserControl
     {
-        public ChatView()
+        public AddFriendsView()
         {
             InitializeComponent();
         }
 
-        private void AddContact(object sender, RoutedEventArgs e)
+        private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Messenger.Instance.RaiseNavigateRequest(new NavigateMessage { NewView = new AddFriendsViewModel() });
+
+        }
+
+        private void Back(object sender, RoutedEventArgs e)
+        {
+            Messenger.Instance.RaiseNavigateRequest(new NavigateMessage { NewView = new ChatViewModel() });
         }
     }
 }

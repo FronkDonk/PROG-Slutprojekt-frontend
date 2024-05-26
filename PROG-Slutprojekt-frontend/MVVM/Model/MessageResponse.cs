@@ -14,6 +14,8 @@ namespace PROG_Slutprojekt_frontend.MVVM.Model
         public string chatRoomId { get; set; }
         public string userId { get; set; }
         public string username { get; set; }
+        public string avatarColor1 { get; set; }
+        public string avatarColor2 { get; set; }
  
     }
 }

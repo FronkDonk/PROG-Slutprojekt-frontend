@@ -16,6 +16,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="50" />
                 <RowDefinition />
+                <RowDefinition Height="30" />
                 <RowDefinition Height="60" />
             </Grid.RowDefinitions>
             <Label Content="Contacts"
@@ -31,22 +32,32 @@
                       Grid.Row="1"
                       ItemContainerStyle="{StaticResource ContactCard}"
                      />
+            <StackPanel Grid.Row="2">
+                <Button 
+                    Margin="2"
+                    Style="{StaticResource Button}"
+                    Content="Add Contact"
+                    Click="AddContact"
+                 />
+            </StackPanel>
 
-            <StackPanel Grid.Row="2"
+            <StackPanel Grid.Row="3"
                         Orientation="Horizontal"
                         Background="#292B2F"
                         >
-                <Border CornerRadius="25"
-                        Width="30"
-                        Height="30"
-                        Background="#3bff6f"
-                        Margin="18,0,0,0"
-                        />
+                <Ellipse Width="30" Height="30" Margin="10,0,0,-5">
+                    <Ellipse.Fill>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="{Binding User.avatarColor1}" Offset="0"/>
+                            <GradientStop Color="{Binding User.avatarColor2}" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Ellipse.Fill>
+                </Ellipse>
                 <StackPanel VerticalAlignment="Center">
                     <Label 
-                        Content="Username" Foreground="White"
+                        Content="{Binding User.username}" Foreground="White"
                         FontWeight="SemiBold" Margin="0,-5,0,-5"/>
-                    <Label Content="Custom Status" 
+                    <Label Content="Yeah buddy" 
                            Foreground="Gray" 
                            FontWeight="SemiBold" 
                            FontSize="10"
@@ -67,7 +78,7 @@
                 <Grid HorizontalAlignment="Stretch"
                       Margin="8"
                       >
-                    <Label Content="@Username"
+                    <Label Content="{Binding SelectedContact.username}"
                            Foreground="White"
                            FontWeight="Bold"
                            Margin="5,0,5,0"

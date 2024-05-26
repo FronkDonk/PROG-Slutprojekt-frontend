@@ -1,6 +1,4 @@
-﻿using PROG_Slutprojekt_frontend.MVVM.ViewModel;
-using PROG_Slutprojekt_frontend.Services;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,21 +13,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace PROG_Slutprojekt_frontend.MVVM.View
+namespace PROG_Slutprojekt_frontend.Components
 {
     /// <summary>
-    /// Interaction logic for ChatView.xaml
+    /// Interaction logic for FriendCard.xaml
     /// </summary>
-    public partial class ChatView : UserControl
+    public partial class FriendCard : UserControl
     {
-        public ChatView()
+        public FriendCard()
         {
             InitializeComponent();
-        }
-
-        private void AddContact(object sender, RoutedEventArgs e)
-        {
-            Messenger.Instance.RaiseNavigateRequest(new NavigateMessage { NewView = new AddFriendsViewModel() });
         }
     }
 }

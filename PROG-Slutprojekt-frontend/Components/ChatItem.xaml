@@ -8,8 +8,8 @@
                         <Ellipse Width="30" Height="30" Margin="10,0,0,-5">
                             <Ellipse.Fill>
                                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                    <GradientStop Color="Yellow" Offset="0"/>
-                                    <GradientStop Color="Red" Offset="1"/>
+                                    <GradientStop Color="{Binding avatarColor1}" Offset="0"/>
+                                    <GradientStop Color="{Binding avatarColor2}" Offset="1"/>
                                 </LinearGradientBrush>
                             </Ellipse.Fill>
                         </Ellipse>
@@ -21,7 +21,7 @@
                                    VerticalAlignment="Center"
                                    Margin="0,0,-5,0" />
                                 <Label Content="{Binding sentAt}"
-                                   Foreground="#44474D"
+                                   Foreground="Gray"
                                    FontWeight="SemiBold"
                                    FontSize="8"
                                    VerticalAlignment="Center"
@@ -47,10 +47,5 @@
                 </StackPanel>
             </ControlTemplate>
         </Style.Resources>
-        <Style.Triggers>
-            <DataTrigger Binding="{Binding FirstMessage}" Value="False">
-                <Setter Property="Template" Value="{StaticResource CustomRow}" />
-            </DataTrigger>
-        </Style.Triggers>
     </Style>
 </ResourceDictionary>
