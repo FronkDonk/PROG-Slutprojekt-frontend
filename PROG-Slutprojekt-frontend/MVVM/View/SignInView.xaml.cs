@@ -103,10 +103,9 @@ namespace PROG_Slutprojekt_frontend.MVVM.View
 
         private void SignInAsGuest(object sender, RoutedEventArgs e)
         {
-            Messenger.Instance.RaiseNavigateRequest(new NavigateMessage { NewView = new SignUpViewModel() });
-
             //mock user
-            
+            Messenger.Instance.RaiseNavigateRequest(new NavigateMessage { NewView = new ChatViewModel() });
+
             UserModel user = new UserModel
             {
                 id = "2e41d814-ef96-4fe0-aa2d-b8e8fcbe828d",
@@ -119,6 +118,12 @@ namespace PROG_Slutprojekt_frontend.MVVM.View
 
             UserService.Instance.User = user;
             
+        }
+
+        private void Navigate(object sender, RoutedEventArgs e)
+        {
+            Messenger.Instance.RaiseNavigateRequest(new NavigateMessage { NewView = new SignUpViewModel() });
+
         }
     }
 }

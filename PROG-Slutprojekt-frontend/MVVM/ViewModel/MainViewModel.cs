@@ -18,6 +18,12 @@ namespace PROG_Slutprojekt_frontend.MVVM.ViewModel
 
         public SignUpViewModel SignUpVM { get; set; }
         public ChatViewModel ChatVM { get; set; }
+        private object currentView;
+        public object CurrentView
+        {
+            get { return currentView; }
+            set { currentView = value; OnPropertyChanged(); }
+        }
 
         public RelayCommand AddFriendCommand { get; set; }
 
@@ -43,11 +49,7 @@ namespace PROG_Slutprojekt_frontend.MVVM.ViewModel
                 }
             };
 
-            AddFriendCommand = new RelayCommand(o =>
-            {
-                Debug.WriteLine("KUKSUGARE");
-            });
-
+        
             Messenger.Instance.NavigateRequested += message =>
             {
                 CurrentView = message.NewView;
